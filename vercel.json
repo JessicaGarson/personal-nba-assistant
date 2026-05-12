@@ -1,0 +1,15 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "fluid": true,
+  "crons": [
+    {
+      "path": "/api/cron/discord-send",
+      "schedule": "30 16 * * *"
+    }
+  ],
+  "functions": {
+    "src/server.js": {
+      "maxDuration": 120
+    }
+  }
+}

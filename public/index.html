@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Personal NBA Assistant</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+
+      :root {
+        color-scheme: light;
+        --bg: #f7f7f3;
+        --surface: #ffffff;
+        --surface-2: rgba(255, 255, 255, 0.78);
+        --ink: #101114;
+        --muted: #5e646e;
+        --muted-2: #8d94a0;
+        --border: rgba(16, 17, 20, 0.08);
+        --border-strong: rgba(16, 17, 20, 0.14);
+        --accent: #111111;
+        --accent-soft: rgba(16, 17, 20, 0.04);
+        --shadow: none;
+        --radius-xl: 28px;
+        --radius-lg: 20px;
+        --radius-md: 14px;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background:
+          radial-gradient(circle at 18% 16%, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0) 28%),
+          radial-gradient(circle at 82% 10%, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0) 24%),
+          linear-gradient(to right, rgba(16, 17, 20, 0.032) 1px, transparent 1px) 0 0 / 72px 72px,
+          linear-gradient(to bottom, rgba(16, 17, 20, 0.032) 1px, transparent 1px) 0 0 / 72px 72px,
+          var(--bg);
+        color: var(--ink);
+        font-family: "Inter", sans-serif;
+      }
+
+      body {
+        min-height: 100vh;
+      }
+
+      main {
+        width: min(1240px, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 28px 0 56px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: flex-end;
+        min-height: 72vh;
+        padding: 18px 0 42px;
+        margin-bottom: 18px;
+      }
+
+      .brand {
+        display: grid;
+        gap: 18px;
+        max-width: 860px;
+      }
+
+      .eyebrow {
+        font-size: 12px;
+        font-weight: 500;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(68px, 11vw, 168px);
+        line-height: 0.82;
+        letter-spacing: -0.09em;
+        max-width: 7.5ch;
+        font-weight: 600;
+      }
+
+      .lede {
+        margin: 0;
+        max-width: 32ch;
+        color: var(--muted);
+        font-size: 20px;
+        line-height: 1.68;
+      }
+
+      .app {
+        display: grid;
+        gap: 22px;
+      }
+
+      .panel {
+        background: rgba(255, 255, 255, 0.78);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(18px);
+      }
+
+      .sidebar {
+        padding: 24px 26px;
+      }
+
+      .section {
+        padding: 24px 26px;
+      }
+
+      .section-label {
+        margin-bottom: 10px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--muted-2);
+      }
+
+      form {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+
+      label {
+        display: grid;
+        gap: 6px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      input,
+      button {
+        font: inherit;
+      }
+
+      input[type="text"],
+      input[type="datetime-local"] {
+        width: 100%;
+        padding: 12px 14px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.9);
+        color: var(--ink);
+        outline: none;
+      }
+
+      input[type="text"]:focus,
+      input[type="datetime-local"]:focus {
+        border-color: var(--border-strong);
+        background: var(--surface);
+      }
+
+      .checkbox-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      .checkbox-row input {
+        accent-color: var(--accent);
+      }
+
+      button {
+        border: 0;
+        border-radius: 999px;
+        padding: 13px 16px;
+        background: var(--accent);
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .generate-stack {
+        display: grid;
+        gap: 14px;
+        min-width: 320px;
+      }
+
+      .generate-meta {
+        display: grid;
+        gap: 4px;
+      }
+
+      .generate-title {
+        margin: 0;
+        font-size: 26px;
+        font-weight: 700;
+        letter-spacing: -0.045em;
+        color: var(--ink);
+      }
+
+      .generate-copy {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.6;
+      }
+
+      .generate-inline {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+        padding: 16px 0 0;
+        border-top: 1px solid var(--border);
+      }
+
+      .generate-window {
+        display: grid;
+        gap: 3px;
+        min-width: 160px;
+      }
+
+      .generate-window-label {
+        font-size: 10px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--muted-2);
+      }
+
+      .generate-window-value {
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--ink);
+      }
+
+      .text-button {
+        border: 0;
+        background: transparent;
+        padding: 0;
+        color: var(--ink);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        text-align: left;
+        cursor: pointer;
+      }
+
+      .advanced-toggle {
+        margin-top: 0;
+      }
+
+      .advanced-toggle summary {
+        list-style: none;
+        cursor: pointer;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+
+      .advanced-toggle summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .advanced-fields {
+        display: grid;
+        gap: 14px;
+        margin-top: 12px;
+      }
+
+      .audio-toggle {
+        display: flex;
+        align-items: center;
+      }
+
+      .submit-button {
+        min-width: 240px;
+        justify-self: end;
+      }
+
+      .controls-meta {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
+
+      .controls-inline {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        flex-wrap: wrap;
+      }
+
+      .how-it-works {
+        display: grid;
+        gap: 16px;
+        padding: 22px 26px;
+      }
+
+      .how-grid {
+        display: grid;
+        grid-template-columns: minmax(280px, 1.25fr) minmax(240px, 1fr);
+        gap: 22px;
+        align-items: start;
+      }
+
+      .how-copy {
+        margin: 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.65;
+        max-width: 56ch;
+      }
+
+      .how-copy em,
+      .lede em {
+        font-family: "Fraunces", serif;
+        font-style: normal;
+        font-weight: 400;
+        letter-spacing: -0.02em;
+      }
+
+      .trace {
+        display: grid;
+        gap: 8px;
+      }
+
+      .trace-step {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        color: var(--muted);
+        font-size: 13px;
+      }
+
+      .trace-badge {
+        width: 22px;
+        height: 22px;
+        border-radius: 999px;
+        border: 1px solid var(--border);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--muted);
+        flex-shrink: 0;
+      }
+
+      .trace-step.active {
+        color: var(--ink);
+      }
+
+      .trace-step.active .trace-badge {
+        background: var(--accent-soft);
+        border-color: var(--border-strong);
+        color: var(--ink);
+      }
+
+      .trace-step.done {
+        color: var(--ink);
+      }
+
+      .trace-step.done .trace-badge {
+        background: #f2f4f7;
+        border-color: var(--border-strong);
+        color: var(--ink);
+      }
+
+      .content {
+        display: grid;
+        gap: 20px;
+      }
+
+      .hero {
+        padding: 26px 30px;
+      }
+
+      .hero-top {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 22px;
+      }
+
+      .hero-title {
+        margin: 0;
+        font-size: clamp(34px, 4.5vw, 58px);
+        line-height: 0.98;
+        letter-spacing: -0.06em;
+        max-width: 12ch;
+      }
+
+      .hero-copy,
+      .run-status,
+      .audio-note,
+      .live-note {
+        margin: 0;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.7;
+      }
+
+      .run-status {
+        max-width: 56ch;
+      }
+
+      .live-strip {
+        display: grid;
+        gap: 14px;
+      }
+
+      .live-strip-header {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .live-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 12px;
+        align-content: start;
+      }
+
+      .live-item {
+        display: grid;
+        gap: 4px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .live-kicker {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--muted-2);
+      }
+
+      .live-title {
+        font-size: 16px;
+        font-weight: 600;
+        line-height: 1.45;
+        color: var(--ink);
+      }
+
+      .live-meta {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        flex-wrap: wrap;
+        color: var(--muted-2);
+        font-size: 12px;
+      }
+
+      .live-dot {
+        width: 3px;
+        height: 3px;
+        border-radius: 999px;
+        background: var(--muted-2);
+      }
+
+      .live-link {
+        display: inline-flex;
+        width: fit-content;
+        margin-top: 2px;
+        font-size: 13px;
+        color: var(--ink);
+        text-decoration: none;
+        font-weight: 600;
+      }
+
+      .live-link:hover {
+        color: var(--muted);
+      }
+
+      .script-card {
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        background: var(--surface-2);
+      }
+
+      .script-text {
+        margin: 0;
+        white-space: pre-wrap;
+        font-size: 20px;
+        line-height: 1.72;
+        letter-spacing: -0.02em;
+      }
+
+      .audio-row {
+        display: grid;
+        gap: 10px;
+        padding-top: 4px;
+      }
+
+      audio {
+        width: 100%;
+      }
+
+      .overview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        align-items: start;
+      }
+
+      .games-panel {
+        display: grid;
+        gap: 8px;
+      }
+
+      .section-intro {
+        margin: 0 0 10px;
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.65;
+        max-width: 54ch;
+      }
+
+      .list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 14px;
+        align-content: start;
+      }
+
+      .list-item {
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .missed-game {
+        display: grid;
+        gap: 12px;
+        padding: 18px 0 20px;
+      }
+
+      .missed-game-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+      }
+
+      .missed-game-kicker {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted-2);
+      }
+
+      .game-status,
+      .missed-game-meta {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+      }
+
+      .missed-game-matchup {
+        display: grid;
+        gap: 8px;
+      }
+
+      .missed-game-title {
+        margin: 0;
+        font-size: 24px;
+        line-height: 1.08;
+        letter-spacing: -0.05em;
+      }
+
+      .missed-game-scoreline {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .score-team {
+        display: grid;
+        gap: 6px;
+        font-size: 15px;
+        color: var(--muted);
+      }
+
+      .score-team strong {
+        font-size: 42px;
+        line-height: 1;
+        letter-spacing: -0.06em;
+        color: var(--ink);
+      }
+
+      .score-label {
+        display: block;
+      }
+
+      .list-copy {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .source-chip {
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: 8px;
+        padding: 5px 8px;
+        border-radius: 999px;
+        background: var(--accent-soft);
+        color: var(--accent);
+        font-size: 10px;
+        font-weight: 600;
+      }
+
+      .diagnostics-footer {
+        padding: 0;
+        background: transparent;
+        border: 0;
+      }
+
+      details {
+        padding: 0 22px 22px;
+      }
+
+      summary {
+        cursor: pointer;
+        list-style: none;
+        color: var(--muted-2);
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+      }
+
+      summary::-webkit-details-marker {
+        display: none;
+      }
+
+      pre {
+        margin: 14px 0 0;
+        white-space: pre-wrap;
+        font-size: 12px;
+        line-height: 1.75;
+        color: var(--muted);
+      }
+
+      .empty {
+        color: var(--muted);
+        font-size: 14px;
+      }
+
+      @media (max-width: 940px) {
+        .overview-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .how-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      @media (max-width: 720px) {
+        main {
+          width: min(100%, calc(100% - 1rem));
+          padding-top: 24px;
+        }
+
+        .topbar {
+          min-height: 52vh;
+          padding-bottom: 28px;
+        }
+
+        .panel {
+          border-radius: 20px;
+        }
+
+        .script-text {
+          font-size: 18px;
+        }
+
+        h1 {
+          font-size: clamp(42px, 12vw, 74px);
+          max-width: 8ch;
+        }
+
+        form {
+          align-items: stretch;
+        }
+
+        .submit-button {
+          width: 100%;
+        }
+
+        .missed-game-scoreline {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header class="topbar">
+        <div class="brand">
+          <div class="eyebrow">Personal NBA Assistant</div>
+          <h1>Catch the games you missed.</h1>
+          <p class="lede">
+            An automatic morning briefing that watches your schedule, detects missed NBA
+            action, researches the web, and turns it into a playable recap.
+          </p>
+        </div>
+      </header>
+
+      <section class="app">
+        <section class="panel sidebar">
+          <div class="section-label">Generate</div>
+          <form id="recap-form">
+            <div class="generate-stack">
+              <div class="generate-meta">
+                <h3 class="generate-title">Generate the last 24 hours</h3>
+                <p class="generate-copy">
+                  A quick playoff briefing based on the games you missed while you were busy.
+                </p>
+              </div>
+
+              <div class="controls-inline">
+                <div class="generate-window">
+                  <span class="generate-window-label">Window</span>
+                  <span class="generate-window-value">Past 24 hours</span>
+                </div>
+                <button id="resetWindow" class="text-button" type="button">Reset</button>
+                <div class="audio-toggle">
+                  <label class="checkbox-row">
+                    <input id="generateAudio" name="generateAudio" type="checkbox" checked />
+                    Include podcast audio
+                  </label>
+                </div>
+              </div>
+
+              <details class="advanced-toggle">
+                <summary>Custom time window</summary>
+                <div class="advanced-fields">
+                  <label>
+                    Window start
+                    <input id="from" name="from" type="datetime-local" />
+                  </label>
+
+                  <label>
+                    Window end
+                    <input id="to" name="to" type="datetime-local" />
+                  </label>
+                </div>
+              </details>
+            </div>
+
+            <button class="submit-button" type="submit">Generate briefing</button>
+          </form>
+        </section>
+
+        <section class="content">
+          <div class="panel section">
+            <div class="hero-top">
+              <div class="section-label">Status</div>
+              <h2 id="statusHeadline" class="hero-title">Ready to prepare your morning briefing.</h2>
+              <p id="status" class="run-status">No recap has been generated yet.</p>
+            </div>
+          </div>
+
+          <section class="panel how-it-works">
+            <div class="section-label">Automatic Flow</div>
+            <div class="how-grid">
+              <p class="how-copy">
+                The assistant checks your recent schedule, decides which NBA games you
+                likely missed, researches current coverage, and returns a short playable
+                briefing without needing you to manually curate the slate.
+              </p>
+              <div class="trace">
+                <div class="trace-step" data-step="1">
+                  <span class="trace-badge">1</span>
+                  Observe schedule context
+                </div>
+                <div class="trace-step" data-step="2">
+                  <span class="trace-badge">2</span>
+                  Detect missed games
+                </div>
+                <div class="trace-step" data-step="3">
+                  <span class="trace-badge">3</span>
+                  Research and shape briefing
+                </div>
+                <div class="trace-step" data-step="4">
+                  <span class="trace-badge">4</span>
+                  Return script and audio
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div class="overview-grid">
+            <section class="panel section games-panel">
+              <div class="section-label">Games You Missed</div>
+              <p class="section-intro">
+                The games the assistant matched against your recent busy time and used for
+                this briefing.
+              </p>
+              <ul id="games" class="list">
+                <li class="empty">No games selected yet.</li>
+              </ul>
+            </section>
+
+            <section class="panel section">
+              <div class="section-label">Live Feed</div>
+              <p class="section-intro">
+                Current NBA coverage pulled into the assistant alongside your missed-game
+                recap.
+              </p>
+              <div class="live-strip">
+                <div class="live-strip-header">
+                  <p id="liveUpdatedAt" class="live-note">Not checked yet.</p>
+                </div>
+                <ul id="liveUpdates" class="live-list">
+                  <li class="empty">Live updates will appear here.</li>
+                </ul>
+              </div>
+            </section>
+          </div>
+
+          <div class="panel hero">
+            <div class="section-label">Briefing</div>
+            <div class="script-block">
+              <div class="script-card">
+                <pre id="script" class="script-text">No recap generated yet.</pre>
+              </div>
+            </div>
+
+            <div class="audio-row">
+              <div class="section-label">Listen</div>
+              <audio id="audioPlayer" controls></audio>
+              <div id="audioStatus" class="audio-note">No audio generated yet.</div>
+            </div>
+          </div>
+
+          <section class="panel section">
+            <div class="section-label">Sources</div>
+            <p class="section-intro">
+              The live articles and recaps the assistant used while preparing the
+              briefing.
+            </p>
+            <ul id="sources" class="list">
+              <li class="empty">No sources gathered yet.</li>
+            </ul>
+          </section>
+
+          <div class="panel diagnostics-footer">
+            <details>
+              <summary>View diagnostics</summary>
+              <pre id="diagnostics">No run yet.</pre>
+            </details>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('recap-form');
+      const statusNode = document.getElementById('status');
+      const statusHeadline = document.getElementById('statusHeadline');
+      const scriptNode = document.getElementById('script');
+      const gamesNode = document.getElementById('games');
+      const sourcesNode = document.getElementById('sources');
+      const diagnosticsNode = document.getElementById('diagnostics');
+      const audioPlayer = document.getElementById('audioPlayer');
+      const audioStatus = document.getElementById('audioStatus');
+      const liveUpdatesNode = document.getElementById('liveUpdates');
+      const liveUpdatedAtNode = document.getElementById('liveUpdatedAt');
+      const traceSteps = Array.from(document.querySelectorAll('.trace-step'));
+      const resetWindowButton = document.getElementById('resetWindow');
+      const submitButton = form.querySelector('button[type="submit"]');
+      let livePollTimer;
+      let isGenerating = false;
+      let isGeneratingAudio = false;
+      let hasAutoGenerated = false;
+
+      seedTimes();
+      loadLiveUpdates();
+      startLivePolling();
+      resetWindowButton.addEventListener('click', seedTimes);
+      window.addEventListener('load', () => {
+        autoGenerateBriefing();
+      });
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        if (isGenerating) return;
+        isGenerating = true;
+        submitButton.disabled = true;
+        submitButton.textContent = 'Preparing briefing…';
+        setTraceState(1, 'active');
+        setTraceState(2, 'idle');
+        setTraceState(3, 'idle');
+        setTraceState(4, 'idle');
+
+        statusHeadline.textContent = 'Observing your schedule and preparing the recap.';
+        statusNode.textContent = 'Checking your calendar and matching NBA games.';
+        scriptNode.textContent = 'Generating your missed-game briefing...';
+        diagnosticsNode.textContent = 'Observing calendar context, game overlap, and live sources...';
+        renderEmptyList(gamesNode, 'Looking for overlapping games...');
+        renderEmptyList(sourcesNode, 'Waiting for source research...');
+        audioPlayer.removeAttribute('src');
+        audioPlayer.load();
+        audioStatus.textContent = 'Audio will appear once the script is ready.';
+
+        const payload = {
+          from: toIso(document.getElementById('from').value),
+          to: toIso(document.getElementById('to').value),
+          generateAudio: false,
+        };
+
+        try {
+          const response = await fetch('/api/recap', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          setTraceState(1, 'done');
+          setTraceState(2, 'done');
+          setTraceState(3, 'active');
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'The agent failed.');
+          }
+
+          setTraceState(3, 'done');
+          setTraceState(4, 'done');
+
+          statusHeadline.textContent = buildStatusHeadline(data);
+          statusNode.textContent = buildStatusCopy(data);
+          scriptNode.textContent = data.script;
+          diagnosticsNode.textContent = JSON.stringify(data.diagnostics, null, 2);
+
+          renderGames(data.games);
+          renderSources(data.coverage);
+
+          if (document.getElementById('generateAudio').checked) {
+            queueAudioGeneration(data.script);
+          } else if (data.audioUrl) {
+            audioPlayer.src = data.audioUrl;
+            audioStatus.textContent = 'Audio ready.';
+          } else {
+            audioStatus.textContent = 'Audio was not requested for this run.';
+          }
+
+          loadLiveUpdates();
+        } catch (error) {
+          statusHeadline.textContent = 'The briefing hit a snag before it could finish.';
+          statusNode.textContent = error.message || 'The agent failed.';
+          scriptNode.textContent = 'No script available.';
+          diagnosticsNode.textContent = JSON.stringify({ error: error.message || String(error) }, null, 2);
+          setTraceState(3, 'idle');
+          setTraceState(4, 'idle');
+          renderEmptyList(gamesNode, 'No games available because the run failed.');
+          renderEmptyList(sourcesNode, 'No sources available because the run failed.');
+        } finally {
+          isGenerating = false;
+          submitButton.disabled = false;
+          submitButton.textContent = 'Generate briefing';
+        }
+      });
+
+      async function queueAudioGeneration(script) {
+        if (isGeneratingAudio) return;
+        isGeneratingAudio = true;
+        audioStatus.textContent = 'Generating podcast audio...';
+
+        try {
+          const response = await fetch('/api/audio', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({ script }),
+          });
+
+          const data = await response.json();
+          if (!response.ok) {
+            throw new Error(data.error || 'Audio generation failed.');
+          }
+
+          if (data.audioUrl) {
+            audioPlayer.src = data.audioUrl;
+            audioPlayer.load();
+            audioStatus.textContent = 'Audio ready.';
+          } else {
+            audioStatus.textContent = 'Audio was not generated for this run.';
+          }
+        } catch (error) {
+          audioStatus.textContent = error.message || 'Audio was not generated for this run.';
+        } finally {
+          isGeneratingAudio = false;
+        }
+      }
+
+      function autoGenerateBriefing() {
+        if (hasAutoGenerated || isGenerating) return;
+        hasAutoGenerated = true;
+        form.requestSubmit();
+      }
+
+      function renderGames(games) {
+        gamesNode.innerHTML = '';
+        if (!games.length) {
+          renderEmptyList(gamesNode, 'No overlapping games found in the selected window.');
+          return;
+        }
+
+        for (const game of games) {
+          const item = document.createElement('li');
+          item.className = 'list-item missed-game';
+          const awayTeam = game.awayTeam || extractTeamName(game.shortName, 0) || 'Away team';
+          const homeTeam = game.homeTeam || extractTeamName(game.shortName, 1) || 'Home team';
+          const awayScore = game.awayScore ?? extractScore(game.finalScore, 0);
+          const homeScore = game.homeScore ?? extractScore(game.finalScore, 1);
+          const scoreLine = buildScoreLine(awayTeam, awayScore, homeTeam, homeScore);
+          const metaLine = !awayScore && !homeScore && game.finalScore
+            ? `<div class="missed-game-meta">${escapeHtml(game.finalScore)}</div>`
+            : '';
+          item.innerHTML = `
+            <div class="missed-game-top">
+              <div class="missed-game-kicker">${escapeHtml(game.shortName || `${awayTeam} @ ${homeTeam}`)}</div>
+              <div class="game-status">${escapeHtml(game.status || 'Final')}</div>
+            </div>
+            <div class="missed-game-matchup">
+              <h3 class="missed-game-title">${escapeHtml(awayTeam)} at ${escapeHtml(homeTeam)}</h3>
+              <div class="missed-game-scoreline">${scoreLine}</div>
+            </div>
+            ${metaLine}
+          `;
+          gamesNode.appendChild(item);
+        }
+      }
+
+      function renderLiveUpdates(updates) {
+        liveUpdatesNode.innerHTML = '';
+
+        if (!updates.length) {
+          renderEmptyList(liveUpdatesNode, 'No live Nimble updates right now.');
+          return;
+        }
+
+        for (const update of updates.slice(0, 4)) {
+          const item = document.createElement('li');
+          item.className = 'live-item';
+          const sourceLabel = 'Live signal';
+          const host = formatSourceHost(update.url);
+          const summary = buildLiveSummary(update);
+          item.innerHTML = `
+            <div class="live-kicker">${escapeHtml(sourceLabel)}</div>
+            <div class="live-title">${escapeHtml(update.title)}</div>
+            <div class="live-meta">
+              <span>${escapeHtml(update.source || host || 'Source')}</span>
+              ${host && update.source && host !== update.source ? `<span class="live-dot" aria-hidden="true"></span><span>${escapeHtml(host)}</span>` : ''}
+            </div>
+            <div class="list-copy">${escapeHtml(summary)}</div>
+            <a class="live-link" href="${escapeAttribute(update.url)}" target="_blank" rel="noreferrer">Read article</a>
+          `;
+          liveUpdatesNode.appendChild(item);
+        }
+      }
+
+      function renderSources(coverage) {
+        sourcesNode.innerHTML = '';
+        const items = [];
+
+        for (const group of coverage) {
+          for (const source of group.searchResults) {
+            items.push({
+              shortName: group.game.shortName,
+              title: source.title,
+              source: source.source || 'source',
+            });
+          }
+        }
+
+        if (!items.length) {
+          renderEmptyList(sourcesNode, 'No source research captured for this run.');
+          return;
+        }
+
+        for (const source of items) {
+          const item = document.createElement('li');
+          item.className = 'list-item';
+          item.innerHTML = `
+            <div class="source-chip">Live source</div>
+            <div class="list-copy"><strong>${escapeHtml(source.shortName)}</strong>: ${escapeHtml(source.title)} (${escapeHtml(source.source)})</div>
+          `;
+          sourcesNode.appendChild(item);
+        }
+      }
+
+      function renderEmptyList(node, text) {
+        node.innerHTML = `<li class="empty">${escapeHtml(text)}</li>`;
+      }
+
+      function buildScoreLine(awayTeam, awayScore, homeTeam, homeScore) {
+        const awayScoreText = awayScore ?? '—';
+        const homeScoreText = homeScore ?? '—';
+        return `
+          <span class="score-team"><span class="score-label">${escapeHtml(awayTeam)}</span><strong>${escapeHtml(String(awayScoreText))}</strong></span>
+          <span class="score-team"><span class="score-label">${escapeHtml(homeTeam)}</span><strong>${escapeHtml(String(homeScoreText))}</strong></span>
+        `;
+      }
+
+      function extractTeamName(shortName, index) {
+        if (!shortName || !shortName.includes('@')) return '';
+        const parts = shortName.split('@').map((part) => part.trim());
+        return parts[index] || '';
+      }
+
+      function extractScore(finalScore, index) {
+        if (!finalScore) return null;
+        const matches = String(finalScore).match(/\d+/g);
+        if (!matches || matches.length < 2) return null;
+        return matches[index] ?? null;
+      }
+
+      function setTraceState(stepNumber, state) {
+        const step = traceSteps.find((item) => Number(item.dataset.step) === stepNumber);
+        if (!step) return;
+        step.classList.remove('active', 'done');
+        if (state === 'active') step.classList.add('active');
+        if (state === 'done') step.classList.add('done');
+      }
+
+      function seedTimes() {
+        const now = new Date();
+        const start = new Date(now.getTime() - 24 * 60 * 60 * 1000);
+        document.getElementById('from').value = toLocalInputValue(start);
+        document.getElementById('to').value = toLocalInputValue(now);
+      }
+
+      function buildStatusHeadline(data) {
+        const gameCount = data.games?.length ?? 0;
+        const assistantDecision = data.diagnostics?.assistantDecision ?? data.decision?.action;
+        const busyMinutes = data.diagnostics?.busyMinutes ?? 0;
+
+        if (assistantDecision === 'skip' && gameCount === 0) {
+          return 'The assistant did not find missed NBA games in that window.';
+        }
+
+        if (assistantDecision === 'skip' && busyMinutes === 0) {
+          return 'The assistant did not find meaningful busy overlap.';
+        }
+
+        if (assistantDecision === 'skip') {
+          return 'The assistant chose not to send a missed-games update.';
+        }
+
+        if (gameCount === 1) {
+          return 'Your missed-game briefing is ready.';
+        }
+
+        return `Your briefing covering ${gameCount} missed games is ready.`;
+      }
+
+      function buildStatusCopy(data) {
+        const gameCount = data.games?.length ?? 0;
+        const busyMinutes = data.diagnostics?.busyMinutes ?? 0;
+        const assistantDecision = data.diagnostics?.assistantDecision ?? data.decision?.action;
+
+        if (assistantDecision === 'skip' && gameCount === 0) {
+          return 'Try a different time window or team priority if you expected a game to appear.';
+        }
+
+        if (assistantDecision === 'skip' && busyMinutes === 0) {
+          return 'The selected time range did not include any meaningful calendar busy time.';
+        }
+
+        if (assistantDecision === 'skip') {
+          return `The selected range only included about ${busyMinutes} busy minute${busyMinutes === 1 ? '' : 's'}, so no assistant alert was needed.`;
+        }
+
+        return `Found ${gameCount} missed game${gameCount === 1 ? '' : 's'}.`;
+      }
+
+      async function loadLiveUpdates() {
+        try {
+          const response = await fetch('/api/live');
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            throw new Error(data.error || 'Could not load live updates.');
+          }
+
+          renderLiveUpdates(data.updates || []);
+          liveUpdatedAtNode.textContent = formatUpdatedAt(data.updatedAt);
+        } catch (error) {
+          renderEmptyList(
+            liveUpdatesNode,
+            `Live updates could not be loaded: ${error.message || 'Unknown error.'}`,
+          );
+          liveUpdatedAtNode.textContent = 'Live refresh failed.';
+        }
+      }
+
+      function startLivePolling() {
+        clearInterval(livePollTimer);
+        livePollTimer = window.setInterval(() => {
+          if (document.visibilityState === 'visible') {
+            loadLiveUpdates();
+          }
+        }, 45000);
+      }
+
+      function formatUpdatedAt(value) {
+        if (!value) return 'Updated just now.';
+        const date = new Date(value);
+        return `Updated ${date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}.`;
+      }
+
+      function buildLiveSummary(update) {
+        const snippet = (update.snippet || '').trim();
+        if (snippet) {
+          return snippet;
+        }
+
+        const title = (update.title || '').trim();
+        if (!title) {
+          return 'Current NBA coverage found by Nimble.';
+        }
+
+        return `Live coverage related to ${title.toLowerCase()}.`;
+      }
+
+      function formatSourceHost(value) {
+        if (!value) return '';
+        try {
+          return new URL(value).hostname.replace(/^www\./, '');
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function toLocalInputValue(date) {
+        const pad = (value) => String(value).padStart(2, '0');
+        return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+      }
+
+      function toIso(value) {
+        return value ? new Date(value).toISOString() : undefined;
+      }
+
+      function escapeHtml(value) {
+        return String(value)
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#39;');
+      }
+
+      function escapeAttribute(value) {
+        return escapeHtml(value);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "personal-nba-assistant",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "app": "node --import tsx --env-file-if-exists=.env src/server.js",
+    "send": "node --import tsx --env-file-if-exists=.env src/deliver.js",
+    "dev": "node --watch --import tsx --env-file-if-exists=.env src/server.js",
+    "recap": "node --import tsx --env-file-if-exists=.env src/cli.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@langchain/core": "^1.1.45",
+    "@langchain/openai": "^1.4.5",
+    "@nimble-way/nimble-js": "^0.14.0",
+    "@vercel/blob": "^2.3.3",
+    "deepagents": "^1.10.0",
+    "langchain": "^1.4.0",
+    "tsx": "^4.21.0",
+    "zod": "^4.4.3"
+  }
+}
