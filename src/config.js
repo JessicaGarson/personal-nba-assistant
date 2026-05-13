@@ -3,6 +3,7 @@ import path from 'node:path';
 export function getConfig() {
   const rootDir = process.cwd();
   const nimbleApiBaseUrl = readEnv('NIMBLE_API_BASE_URL') ?? 'https://sdk.nimbleway.com/v1';
+  const publicBaseUrl = readEnv('PUBLIC_BASE_URL') || inferPublicBaseUrl();
 
   return {
     port: Number(process.env.PORT ?? 4321),
@@ -28,9 +29,7 @@ export function getConfig() {
     blobReadWriteToken: readEnv('BLOB_READ_WRITE_TOKEN') ?? '',
     blobAudioPathPrefix: readEnv('BLOB_AUDIO_PATH_PREFIX') ?? 'recaps',
     blobStoreAccess: readEnv('BLOB_STORE_ACCESS') === 'private' ? 'private' : 'public',
-    publicBaseUrl:
-      readEnv('PUBLIC_BASE_URL') ??
-      `http://${readEnv('HOST') ?? '127.0.0.1'}:${process.env.PORT ?? 4321}`,
+    publicBaseUrl,
     cronSecret: readEnv('CRON_SECRET') ?? '',
     cronAllowedDates: splitCsv(readEnv('CRON_ALLOWED_DATES') ?? ''),
     cronTimezone: readEnv('CRON_TIMEZONE') ?? 'America/New_York',
@@ -50,4 +49,18 @@ export function splitCsv(value) {
 function readEnv(name) {
   const value = process.env[name];
   return typeof value === 'string' ? value.trim() : '';
+}
+
+function inferPublicBaseUrl() {
+  const productionUrl = readEnv('VERCEL_PROJECT_PRODUCTION_URL');
+  if (productionUrl) {
+    return `https://${productionUrl}`;
+  }
+
+  const deploymentUrl = readEnv('VERCEL_URL');
+  if (deploymentUrl) {
+    return `https://${deploymentUrl}`;
+  }
+
+  return `http://${readEnv('HOST') ?? '127.0.0.1'}:${process.env.PORT ?? 4321}`;
 }

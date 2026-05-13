@@ -103,8 +103,8 @@ const server = http.createServer(async (req, res) => {
       const audioAsset = await generatePodcastAudio(config, script);
       const audioUrl =
         audioAsset.audioUrl ??
-        (audioAsset.blobPathname ? toPrivateBlobAudioUrl(config, audioAsset.blobPathname) : null) ??
-        (audioAsset.audioPath ? toPublicAudioUrl(config, audioAsset.audioPath) : null);
+        (audioAsset.blobPathname ? toPrivateBlobAudioPath(audioAsset.blobPathname) : null) ??
+        (audioAsset.audioPath ? toLocalAudioPath(audioAsset.audioPath) : null);
 
       return sendJson(res, 200, {
         audioPath: audioAsset.audioPath ?? null,
@@ -147,7 +147,7 @@ const server = http.createServer(async (req, res) => {
       }
 
       res.writeHead(200, {
-        'content-type': result.blob.contentType,
+        'content-type': result.blob.contentType || getAudioContentType(pathname),
         ETag: result.blob.etag,
         'Cache-Control': 'private, no-cache',
         'X-Content-Type-Options': 'nosniff',
@@ -220,6 +220,15 @@ function toPublicAudioUrl(config, audioPath) {
 
 function toPrivateBlobAudioUrl(config, pathname) {
   return `${config.publicBaseUrl.replace(/\/$/, '')}/api/audio?pathname=${encodeURIComponent(pathname)}`;
+}
+
+function toLocalAudioPath(audioPath) {
+  const fileName = audioPath.split('/').pop();
+  return `/output/${fileName}`;
+}
+
+function toPrivateBlobAudioPath(pathname) {
+  return `/api/audio?pathname=${encodeURIComponent(pathname)}`;
 }
 
 function getAudioContentType(fileName) {
