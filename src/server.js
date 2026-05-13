@@ -175,6 +175,15 @@ const server = http.createServer(async (req, res) => {
 
     sendJson(res, 404, { error: 'Not found' });
   } catch (error) {
+    console.error('[server] Request failed');
+    if (error instanceof Error) {
+      console.error(error.message);
+      if (error.stack) {
+        console.error(error.stack);
+      }
+    } else {
+      console.error(JSON.stringify(error, null, 2));
+    }
     sendJson(res, 500, {
       error: error instanceof Error ? error.message : 'Unknown error',
     });
