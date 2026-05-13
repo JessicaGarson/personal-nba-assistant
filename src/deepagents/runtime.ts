@@ -1,3 +1,5 @@
+import "@langchain/openai";
+
 import * as z from "zod";
 import { createDeepAgent } from "deepagents";
 
